@@ -10,20 +10,6 @@ local bo = vim.bo
 
 vim.g.mapleader = ' ';
 
-vim.g.netrw_banner = 1;
-vim.g.netrw_browse_split = 4;
-vim.g.netrw_liststyle = 3;
-vim.g.netrw_altv = 1;
-vim.g.netrw_winsize = 25;
-
-vim.cmd([[
-augroup ProjectDrawer
-  autocmd!
-  autocmd VimEnter * : Lexplore
-augroup END
-]])
-
-
 
 wo.number = true;
 wo.relativenumber = true;

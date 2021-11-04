@@ -15,6 +15,15 @@ return require('packer').startup(function()
       requires = {'kyazdani42/nvim-web-devicons', opt = true}
     }
   use {"ellisonleao/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use {
+  'nvim-telescope/telescope.nvim',
+  requires = { {'nvim-lua/plenary.nvim',} }
+	}
+
+	use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+	use {'neovim/nvim-lspconfig' }
+
+	use {'kyazdani42/nvim-web-devicons', run = 'make' }
 
   if packer_boostrap then 
     require('packer').sync()
