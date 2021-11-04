@@ -10,6 +10,12 @@ end
 
 return require('packer').startup(function()
   use 'wbthomason/packer.nvim'
+  use 'navarasu/onedark.nvim'
+  use {
+	'nvim-treesitter/nvim-treesitter',
+	run = ':TSUpdate'
+	}
+
   use {
     'nvim-lualine/lualine.nvim',
       requires = {'kyazdani42/nvim-web-devicons', opt = true}
@@ -22,6 +28,8 @@ return require('packer').startup(function()
 
 	use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
 	use {'neovim/nvim-lspconfig' }
+	use "jose-elias-alvarez/null-ls.nvim"
+	use "jose-elias-alvarez/nvim-lsp-ts-utils"
 
 	use {'kyazdani42/nvim-web-devicons', run = 'make' }
 
