@@ -93,16 +93,21 @@ require("lspconfig").sumneko_lua.setup({
       },
       workspace = {
         -- Make the server aware of Neovim runtime files
+        maxPreload = 2000,
+        preloadFileSize = 50000,
+        checkThirdParty = false,
         library = {
           [vim.fn.expand("$VIMRUNTIME/lua")] = true,
           [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
         },
-        maxPreload = 10000, -- Add this if missing or increase it
-        preloadFileSize = 10000, -- Add this if missing or increase it
       },
     },
   },
 })
+
+---------------------------------------------------------------------------
+local cmp = require("cmp")
+local luasnip = require("luasnip")
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -112,9 +117,6 @@ local has_words_before = function()
         :match("%s")
       == nil
 end
----------------------------------------------------------------------------
-local cmp = require("cmp")
-local luasnip = require("luasnip")
 
 cmp.setup({
   snippet = {
