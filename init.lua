@@ -1,10 +1,10 @@
-require('plugins');
-require('settings');
-require('statusline');
-require('keymappings');
-require('telescopes');
-require('lsp_config');
-require'nvim-treesitter.configs'.setup {
+require("plugins")
+require("settings")
+require("statusline")
+require("keymappings")
+require("telescopes")
+require("lsp_config")
+require("nvim-treesitter.configs").setup({
   highlight = {
     enable = true,
     custom_captures = {
@@ -17,12 +17,8 @@ require'nvim-treesitter.configs'.setup {
     -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
   },
-}
-
+})
 
 vim.o.background = "dark" -- or "light" for light mode
 vim.cmd([[colorscheme gruvbox]])
-
-
-
-
+vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
