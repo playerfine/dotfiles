@@ -15,6 +15,8 @@ end
 
 return require("packer").startup(function(use)
   use("wbthomason/packer.nvim")
+  use("neovim/nvim-lspconfig")
+  use("jose-elias-alvarez/null-ls.nvim")
   use("navarasu/onedark.nvim")
   use({
     "nvim-treesitter/nvim-treesitter",
@@ -32,8 +34,6 @@ return require("packer").startup(function(use)
   })
 
   use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" })
-  use({ "neovim/nvim-lspconfig" })
-  use("jose-elias-alvarez/null-ls.nvim")
   use("jose-elias-alvarez/nvim-lsp-ts-utils")
   use("hrsh7th/cmp-nvim-lsp")
   use("hrsh7th/cmp-buffer")
@@ -42,6 +42,8 @@ return require("packer").startup(function(use)
   use("hrsh7th/nvim-cmp")
   use("L3MON4D3/LuaSnip")
   use("simrat39/rust-tools.nvim")
+  use("windwp/nvim-autopairs")
+  use('ThePrimeagen/harpoon')
 
   use({ "kyazdani42/nvim-web-devicons", run = "make" })
 
