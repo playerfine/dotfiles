@@ -41,11 +41,14 @@ return require("packer").startup(function(use)
   use("hrsh7th/cmp-cmdline")
   use("hrsh7th/nvim-cmp")
   use("L3MON4D3/LuaSnip")
+  use('saadparwaiz1/cmp_luasnip')
   use("simrat39/rust-tools.nvim")
   use("windwp/nvim-autopairs")
   use('ThePrimeagen/harpoon')
 
   use({ "kyazdani42/nvim-web-devicons", run = "make" })
+  use { 'numToStr/Comment.nvim'}
+  use({ 'JoosepAlviste/nvim-ts-context-commentstring'})
 
   if packer_boostrap then
     require("packer").sync()

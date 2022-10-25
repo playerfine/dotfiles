@@ -7,7 +7,6 @@ vim.api.nvim_set_keymap('n', '<leader>fb', '<cmd>lua require("telescope.builtin"
 vim.api.nvim_set_keymap('n', '<leader>fh', '<cmd>lua require("telescope.builtin").help_tags()<cr>', {noremap = true});
 vim.api.nvim_set_keymap('n', '<leader>df', '<cmd>lua require("telescopes").search_dotfiles()<cr>', {noremap = true});
 vim.api.nvim_set_keymap('n', '<leader>af', '<cmd>lua require("harpoon.mark").add_file()<cr>', {noremap = true});
-vim.api.nvim_set_keymap('n', '<leader>af', '<cmd>lua require("harpoon.mark").add_file()<cr>', {noremap = true});
 vim.api.nvim_set_keymap('n', '<leader>mf', '<cmd>lua require("harpoon.ui").toggle_quick_menu()<cr>', {noremap = true});
 vim.api.nvim_set_keymap('n', '<leader>1', '<cmd>lua require("harpoon.ui").nav_file(1)<cr>', {noremap = true});
 vim.api.nvim_set_keymap('n', '<leader>2', '<cmd>lua require("harpoon.ui").nav_file(2)<cr>', {noremap = true});

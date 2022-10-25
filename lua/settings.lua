@@ -30,3 +30,6 @@ o.shiftwidth = 2
 o.signcolumn = "yes"
 o.cursorline = true
 vim.cmd([[set cc=80]])
+vim.api.nvim_command("set noswapfile") -- I have OCD file saving issues anyway
+
+
