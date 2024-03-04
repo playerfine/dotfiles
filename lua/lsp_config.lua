@@ -1,8 +1,6 @@
 local nvim_lsp = require("lspconfig")
-local null_ls = require("null-ls")
+vim.lsp.set_log_level("debug")
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...)
     vim.api.nvim_buf_set_keymap(bufnr, ...)
@@ -17,31 +15,37 @@ local on_attach = function(client, bufnr)
   -- Mappings.
   local opts = { noremap = true, silent = true }
 
-  client.resolved_capabilities.document_formatting = false
-  client.resolved_capabilities.document_range_formatting = false
-
-  local ts_utils = require("nvim-lsp-ts-utils")
-
-  ts_utils.setup({
-    eslint_bin = "eslint_d",
-    eslint_enable_diagnostics = true,
-    eslint_enable_code_actions = true,
-    enable_formatting = true,
-    formatter = "prettierd",
-  })
-
-  ts_utils.setup_client(client)
+  client.server_capabilities.documentFormattingProvider = true
+  client.server_capabilities.documentRangeFormattingProvider = false
 
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   buf_set_keymap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
-  buf_set_keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+  vim.keymap.set("n", "gd", function()
+    require("telescope.builtin").lsp_definitions({
+      layout_strategy = "vertical",
+      layout_config = {
+        width = 0.9,
+        height = 0.9,
+        prompt_position = "top",
+      },
+    })
+  end, opts)
   buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-  buf_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+  vim.keymap.set("n", "gr", function()
+    require("telescope.builtin").lsp_references({
+      layout_strategy = "vertical",
+      layout_config = {
+        width = 0.9,
+        height = 0.9,
+        prompt_position = "top",
+      },
+    })
+  end, opts)
   buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
   buf_set_keymap(
     "n",
     "<leader>k",
-    "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>",
+    "<cmd>lua vim.diagnostic.open_float()<CR>",
     opts
   )
   buf_set_keymap(
@@ -56,56 +60,9 @@ local on_attach = function(client, bufnr)
     "<cmd>lua vim.lsp.buf.code_action()<CR>",
     opts
   )
+  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 end
 
-USER = vim.fn.expand("$USER")
-
-local sumneko_root_path = ""
-local sumneko_binary = ""
-
-if vim.fn.has("mac") == 1 then
-  sumneko_root_path = "/Users/" .. USER .. "/.config/nvim/lua-language-server"
-  sumneko_binary = "/Users/"
-    .. USER
-    .. "/.config/nvim/lua-language-server/bin/macOS/lua-language-server"
-elseif vim.fn.has("unix") == 1 then
-  sumneko_root_path = "/home/" .. USER .. "/.config/nvim/lua-language-server"
-  sumneko_binary = "/home/"
-    .. USER
-    .. "/.config/nvim/lua-language-server/bin/Linux/lua-language-server"
-else
-  print("Unsupported system for sumneko")
-end
-
-require("lspconfig").sumneko_lua.setup({
-  cmd = { sumneko_binary, "-E", sumneko_root_path .. "/main.lua" },
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = "LuaJIT",
-        -- Setup your lua path
-        path = vim.split(package.path, ";"),
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = { "vim" },
-      },
-      workspace = {
-        -- Make the server aware of Neovim runtime files
-        maxPreload = 2000,
-        preloadFileSize = 50000,
-        checkThirdParty = false,
-        library = {
-          [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-          [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-        },
-      },
-    },
-  },
-})
-
----------------------------------------------------------------------------
 local cmp = require("cmp")
 local luasnip = require("luasnip")
 local luafmt = require("luasnip.extras.fmt").fmt
@@ -117,7 +74,8 @@ local i = luasnip.insert_node
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
   return col ~= 0
-    and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
+    and vim.api
+        .nvim_buf_get_lines(0, line - 1, line, true)[1]
         :sub(col, col)
         :match("%s")
       == nil
@@ -151,24 +109,25 @@ local kind_icons = {
   TypeParameter = "",
 }
 
-
-
 cmp.setup({
-      snippet = {
-        expand = function(args)
-            local luasnip = require("luasnip")
-            if not luasnip then
-                return
-            end
-            luasnip.lsp_expand(args.body)
-        end,
-    },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  snippet = {
+    expand = function(args)
+      if not luasnip then
+        return
+      end
+      luasnip.lsp_expand(args.body)
+    end,
+  },
   completion = {
     completeopt = "menu,menuone,noinsert",
   },
 
   --view = {
-    --entries = "native"
+  --entries = "native"
   --},
 
   experimental = {
@@ -235,8 +194,9 @@ cmp.setup({
   }),
 })
 
--- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline("/", {
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({ "/", "?" }, {
+  mapping = cmp.mapping.preset.cmdline(),
   sources = {
     { name = "buffer" },
   },
@@ -244,6 +204,7 @@ cmp.setup.cmdline("/", {
 
 -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline(":", {
+  mapping = cmp.mapping.preset.cmdline(),
   sources = cmp.config.sources({
     { name = "path" },
   }, {
@@ -252,7 +213,7 @@ cmp.setup.cmdline(":", {
 })
 
 luasnip.add_snippets(nil, {
-	all = {
+  all = {
     s("import", {
       t("import "),
       i(1),
@@ -263,101 +224,79 @@ luasnip.add_snippets(nil, {
     s("log", {
       t("console.log("),
       i(1),
-      t(');'),
+      t(");"),
     }),
-    s("rs", luafmt("const [{}, {}] = useState({})", {i(1, "state"), i(2, "setState"), i(0, "initialValue")}))
-  }
+    s(
+      "rs",
+      luafmt(
+        "const [{}, {}] = useState({})",
+        { i(1, "state"), i(2, "setState"), i(0, "initialValue") }
+      )
+    ),
+  },
 })
-
 --------------------------------------------------------------------------
 
 -- Setup lspconfig.
-local capabilities = require("cmp_nvim_lsp").update_capabilities(
+local capabilities = require("cmp_nvim_lsp").default_capabilities(
   vim.lsp.protocol.make_client_capabilities()
 )
 
-nvim_lsp.tsserver.setup({
-  on_attach = on_attach,
-  capabilities = capabilities,
-})
+local servers = {
+  "pyright",
+  "astro",
+  "tsserver",
+  "rust_analyzer",
+  "tailwindcss",
+  "jsonls",
+  "yamlls",
+}
 
-local formatting = null_ls.builtins.formatting
-local diagnostics = null_ls.builtins.diagnostics
-local completion = null_ls.builtins.completion
-local codeactions = null_ls.builtins.code_actions
+local lsp_flags = {
+  debounce_text_changes = 150,
+}
 
-null_ls.setup({
-    sources = {
-        formatting.prettier.with({
-            filetypes = { "html", "css", "javascript", "javascriptreact", "markdown", "json", "yaml" },
-        }),
-        formatting.black,
-        formatting.eslint_d,
-        formatting.stylua,
-        formatting.shfmt.with({
-            filetypes = { "bash", "zsh", "sh" },
-        }),
-
-        diagnostics.eslint_d,
-        diagnostics.luacheck,
-        diagnostics.mdl,
-        diagnostics.vint,
-
-        codeactions.eslint_d,
-    },
-    on_attach = function(client)
-        if client.resolved_capabilities.document_formatting then
-            vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()")
-        end
-    end,
-})
-
-local opts = {
-  tools = { -- rust-tools options
-    autoSetHints = true,
-    hover_with_actions = true,
-    inlay_hints = {
-      show_parameter_hints = false,
-      parameter_hints_prefix = "",
-      other_hints_prefix = "",
-    },
-  },
-
-  -- all the opts to send to nvim-lspconfig
-  -- these override the defaults set by rust-tools.nvim
-  -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
-  server = {
-    -- on_attach is a callback called when the language server attachs to the buffer
+for _, lsp in ipairs(servers) do
+  require("lspconfig")[lsp].setup({
     on_attach = on_attach,
-    settings = {
-      -- to enable rust-analyzer settings visit:
-      -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-      ["rust-analyzer"] = {
-        -- enable clippy on save
-        checkOnSave = {
-          command = "clippy",
+    flags = lsp_flags,
+    capabilities = capabilities,
+  })
+end
+
+require("lspconfig").lua_ls.setup({
+  settings = {
+    Lua = {
+      runtime = { version = "LuaJIT" },
+      workspace = {
+        checkThirdParty = false,
+        library = {
+          "${3rd}/luv/library",
+          unpack(vim.api.nvim_get_runtime_file("", true)),
         },
+      },
+      completion = {
+        callSnippet = "Replace",
       },
     },
   },
-}
+})
 
-require("rust-tools").setup(opts)
-
-require'lspconfig'.gopls.setup{
+require("lspconfig").volar.setup({
   on_attach = on_attach,
-}
+  filetypes = {
+    "typescript",
+    "javascript",
+    "javascriptreact",
+    "typescriptreact",
+    "vue",
+    "json",
+  },
+})
 
-require('nvim-autopairs').setup{}
-
-require('Comment').setup {
-  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-}
-
-require'nvim-treesitter.configs'.setup {
-  context_commentstring = {
-    enable = true,
-    enable_autocmd = false,
-  }
-}
-
+require("nvim-autopairs").setup({})
+require("Comment").setup({
+  pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+})
+require("gitsigns").setup()
+require("oil").setup()

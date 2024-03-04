@@ -31,5 +31,15 @@ o.signcolumn = "yes"
 o.cursorline = true
 vim.cmd([[set cc=80]])
 vim.api.nvim_command("set noswapfile") -- I have OCD file saving issues anyway
+vim.g.instant_username = "ZjerilonTheGreatestDeveloper"
 
-
+vim.api.nvim_create_autocmd("TextYankPost", {
+  desc = "Highlight when yanking (copying) text",
+  group = vim.api.nvim_create_augroup(
+    "kickstart-highlight-yank",
+    { clear = true }
+  ),
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+})

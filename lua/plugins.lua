@@ -1,56 +1,76 @@
-local fn = vim.fn
-
-local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-
-if fn.empty(fn.glob(install_path)) > 0 then
-  packer_bootstrap = fn.system({
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
     "git",
     "clone",
-    "--depth",
-    "1",
-    "https://github.com/wbthomason/packer.nvim",
-    install_path,
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
   })
 end
 
-return require("packer").startup(function(use)
-  use("wbthomason/packer.nvim")
-  use("neovim/nvim-lspconfig")
-  use("jose-elias-alvarez/null-ls.nvim")
-  use("navarasu/onedark.nvim")
-  use({
+vim.opt.rtp:prepend(lazypath)
+
+local plugins = {
+  "neovim/nvim-lspconfig",
+  "navarasu/onedark.nvim",
+  {
     "nvim-treesitter/nvim-treesitter",
-    run = ":TSUpdate",
-  })
-
-  use({
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
+        sync_install = false,
+        auto_install = true,
+        highlight = {
+          enable = true,
+          additional_vim_regex_highlighting = false,
+        },
+      })
+    end,
+  },
+  {
     "nvim-lualine/lualine.nvim",
-    requires = { "kyazdani42/nvim-web-devicons", opt = true },
-  })
-  use({ "ellisonleao/gruvbox.nvim", requires = { "rktjmp/lush.nvim" } })
-  use({
+    dependencies = { "kyazdani42/nvim-web-devicons" },
+  },
+  { "ellisonleao/gruvbox.nvim", dependencies = { "rktjmp/lush.nvim" } },
+  {
     "nvim-telescope/telescope.nvim",
-    requires = { { "nvim-lua/plenary.nvim" } },
-  })
+    dependencies = { { "nvim-lua/plenary.nvim" } },
+  },
+  "nvim-telescope/telescope-file-browser.nvim",
+  "hrsh7th/cmp-nvim-lsp",
+  "hrsh7th/cmp-buffer",
+  "hrsh7th/cmp-path",
+  "hrsh7th/cmp-cmdline",
+  "hrsh7th/nvim-cmp",
+  "L3MON4D3/LuaSnip",
+  "saadparwaiz1/cmp_luasnip",
+  "simrat39/rust-tools.nvim",
+  "windwp/nvim-autopairs",
+  "ThePrimeagen/harpoon",
+  { "kyazdani42/nvim-web-devicons" },
+  "numToStr/Comment.nvim",
+  "catppuccin/nvim",
+  "kdheepak/lazygit.nvim",
+  "jose-elias-alvarez/typescript.nvim",
+  "lewis6991/gitsigns.nvim",
+  "github/copilot.vim",
+  "stevearc/oil.nvim",
+  "JoosepAlviste/nvim-ts-context-commentstring",
+  "williamboman/mason.nvim",
+  "williamboman/mason-lspconfig.nvim",
+  "stevearc/conform.nvim",
+  "mfussenegger/nvim-lint",
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+    },
+  },
+}
 
-  use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" })
-  use("jose-elias-alvarez/nvim-lsp-ts-utils")
-  use("hrsh7th/cmp-nvim-lsp")
-  use("hrsh7th/cmp-buffer")
-  use("hrsh7th/cmp-path")
-  use("hrsh7th/cmp-cmdline")
-  use("hrsh7th/nvim-cmp")
-  use("L3MON4D3/LuaSnip")
-  use('saadparwaiz1/cmp_luasnip')
-  use("simrat39/rust-tools.nvim")
-  use("windwp/nvim-autopairs")
-  use('ThePrimeagen/harpoon')
-
-  use({ "kyazdani42/nvim-web-devicons", run = "make" })
-  use { 'numToStr/Comment.nvim'}
-  use({ 'JoosepAlviste/nvim-ts-context-commentstring'})
-
-  if packer_boostrap then
-    require("packer").sync()
-  end
-end)
+require("lazy").setup(plugins, opts)
+require("mason").setup()
+require("mason-lspconfig").setup()

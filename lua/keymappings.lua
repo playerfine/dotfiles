@@ -12,5 +12,8 @@ vim.api.nvim_set_keymap('n', '<leader>1', '<cmd>lua require("harpoon.ui").nav_fi
 vim.api.nvim_set_keymap('n', '<leader>2', '<cmd>lua require("harpoon.ui").nav_file(2)<cr>', {noremap = true});
 vim.api.nvim_set_keymap('n', '<leader>3', '<cmd>lua require("harpoon.ui").nav_file(3)<cr>', {noremap = true});
 vim.api.nvim_set_keymap('n', '<leader>4', '<cmd>lua require("harpoon.ui").nav_file(4)<cr>', {noremap = true});
-
-
+vim.api.nvim_set_keymap('n', '<leader>gg', '<cmd>LazyGit<cr>', {noremap = true});
+vim.api.nvim_set_keymap('n', '<C-d>', '<C-d>zz', {noremap = true});
+vim.api.nvim_set_keymap('n', '<C-u', '<C-u>zz', {noremap = true});
+vim.api.nvim_set_keymap("n", "<C-f>", "<cmd>silent !tmux neww tmux_sessionizer<CR>", {noremap = true})
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
