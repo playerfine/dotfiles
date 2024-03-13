@@ -1,5 +1,5 @@
 local jsFiles =
-  { "javascript", "javascriptreact", "typescript", "typescriptreact" }
+  { "javascript", "javascriptreact", "typescript", "typescriptreact", "vue" }
 local jsLinter = { "eslint_d" }
 local ft_configs = {}
 

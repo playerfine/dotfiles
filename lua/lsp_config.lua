@@ -1,4 +1,3 @@
-local nvim_lsp = require("lspconfig")
 vim.lsp.set_log_level("debug")
 
 local on_attach = function(client, bufnr)
@@ -242,27 +241,22 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities(
   vim.lsp.protocol.make_client_capabilities()
 )
 
-local servers = {
-  "pyright",
-  "astro",
-  "tsserver",
-  "rust_analyzer",
-  "tailwindcss",
-  "jsonls",
-  "yamlls",
-}
-
 local lsp_flags = {
   debounce_text_changes = 150,
 }
 
-for _, lsp in ipairs(servers) do
-  require("lspconfig")[lsp].setup({
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities,
-  })
-end
+require("mason-lspconfig").setup_handlers({
+  -- The first entry (without a key) will be the default handler
+  -- and will be called for each installed server that doesn't have
+  -- a dedicated handler.
+  function(server_name) -- default handler (optional)
+    require("lspconfig")[server_name].setup({
+      on_attach = on_attach,
+      flags = lsp_flags,
+      capabilities = capabilities,
+    })
+  end,
+})
 
 require("lspconfig").lua_ls.setup({
   settings = {
@@ -282,17 +276,18 @@ require("lspconfig").lua_ls.setup({
   },
 })
 
-require("lspconfig").volar.setup({
-  on_attach = on_attach,
-  filetypes = {
-    "typescript",
-    "javascript",
-    "javascriptreact",
-    "typescriptreact",
-    "vue",
-    "json",
-  },
-})
+-- require("lspconfig").volar.setup({
+--   on_attach = on_attach,
+--   capabilities = capabilities,
+--   filetypes = {
+--     "typescript",
+--     "javascript",
+--     "javascriptreact",
+--     "typescriptreact",
+--     "vue",
+--     "json",
+--   },
+-- })
 
 require("nvim-autopairs").setup({})
 require("Comment").setup({

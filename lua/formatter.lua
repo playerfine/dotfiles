@@ -5,6 +5,7 @@ require("conform").setup({
     typescript = { "prettierd" },
     typescriptreact = { "prettierd" },
     lua = { "stylua" },
+    vue = { "prettierd" },
   },
   format_on_save = {
     timeout_ms = 500,
